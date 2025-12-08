@@ -1,0 +1,254 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  DRIVER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING         // Order created, waiting for driver
+  ACCEPTED        // Driver accepted
+  PICKED_UP       // Package picked up
+  IN_TRANSIT      // On the way
+  DELIVERED       // Successfully delivered
+  CANCELLED       // Cancelled by customer or driver
+  REFUNDED        // Payment refunded
+}
+
+enum PackageType {
+  SMALL           // < 5kg
+  MEDIUM          // 5-15kg
+  LARGE           // 15-30kg
+  EXTRA_LARGE     // > 30kg
+}
+
+enum VehicleType {
+  BICYCLE
+  SCOOTER
+  MOTORCYCLE
+  CAR
+  VAN
+}
+
+enum DocumentType {
+  ID_CARD
+  DRIVER_LICENSE
+  VEHICLE_REGISTRATION
+  INSURANCE
+  BUSINESS_LICENSE
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  phone         String?
+  phoneVerified Boolean   @default(false)
+  password      String
+  role          UserRole  @default(CUSTOMER)
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  driver        Driver?
+  ordersAsCustomer Order[] @relation("CustomerOrders")
+  ordersAsDriver   Order[] @relation("DriverOrders")
+  ratingsGiven     Rating[] @relation("RatingsGiven")
+  ratingsReceived  Rating[] @relation("RatingsReceived")
+
+  @@index([email])
+}
+
+model Driver {
+  id              String        @id @default(cuid())
+  userId          String        @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Status
+  isOnline        Boolean       @default(false)
+  isVerified      Boolean       @default(false)
+  isActive        Boolean       @default(true)
+
+  // Vehicle info
+  vehicleType     VehicleType
+  vehiclePlate    String?
+  vehicleBrand    String?
+  vehicleModel    String?
+  vehicleColor    String?
+
+  // Banking info
+  iban            String?
+  accountHolder   String?
+
+  // Stats
+  totalDeliveries Int           @default(0)
+  averageRating   Float?
+  earnings        Float         @default(0)
+
+  // Location (last known)
+  latitude        Float?
+  longitude       Float?
+  lastLocationUpdate DateTime?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  documents       Document[]
+
+  @@index([userId])
+  @@index([isOnline, isVerified])
+}
+
+model Document {
+  id          String          @id @default(cuid())
+  driverId    String
+  driver      Driver          @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  type        DocumentType
+  url         String
+  status      DocumentStatus  @default(PENDING)
+  rejectionReason String?
+
+  uploadedAt  DateTime        @default(now())
+  verifiedAt  DateTime?
+
+  @@index([driverId])
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique
+
+  // Customer info
+  customerId      String
+  customer        User          @relation("CustomerOrders", fields: [customerId], references: [id])
+
+  // Driver info
+  driverId        String?
+  driver          User?         @relation("DriverOrders", fields: [driverId], references: [id])
+
+  // Package details
+  packageType     PackageType
+  packageWeight   Float?
+  packageDescription String?
+  prohibitedItems Boolean       @default(false)
+
+  // Pickup
+  pickupAddress   String
+  pickupLat       Float
+  pickupLng       Float
+  pickupName      String?
+  pickupPhone     String?
+
+  // Delivery
+  deliveryAddress String
+  deliveryLat     Float
+  deliveryLng     Float
+  deliveryName    String
+  deliveryPhone   String
+  deliveryInstructions String?
+
+  // Timing
+  isScheduled     Boolean       @default(false)
+  scheduledFor    DateTime?
+  acceptedAt      DateTime?
+  pickedUpAt      DateTime?
+  deliveredAt     DateTime?
+
+  // Pricing
+  distance        Float         // in kilometers
+  basePrice       Float
+  urgencyFee      Float         @default(0)
+  totalPrice      Float
+  driverEarnings  Float?
+  commission      Float?
+
+  // Status & QR
+  status          OrderStatus   @default(PENDING)
+  qrCode          String?       @unique
+  cancellationReason String?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  payment         Payment?
+  rating          Rating?
+
+  @@index([customerId])
+  @@index([driverId])
+  @@index([status])
+  @@index([orderNumber])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  orderId         String        @unique
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  amount          Float
+  currency        String        @default("EUR")
+  status          PaymentStatus @default(PENDING)
+
+  // Stripe info
+  stripePaymentIntentId String? @unique
+  stripeChargeId        String?
+
+  // Refund info
+  refundAmount    Float?
+  refundedAt      DateTime?
+  refundReason    String?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([orderId])
+  @@index([stripePaymentIntentId])
+}
+
+model Rating {
+  id          String    @id @default(cuid())
+  orderId     String    @unique
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // From customer to driver
+  fromUserId  String
+  fromUser    User      @relation("RatingsGiven", fields: [fromUserId], references: [id])
+
+  toUserId    String
+  toUser      User      @relation("RatingsReceived", fields: [toUserId], references: [id])
+
+  rating      Int       // 1-5 stars
+  comment     String?
+
+  createdAt   DateTime  @default(now())
+
+  @@index([orderId])
+  @@index([fromUserId])
+  @@index([toUserId])
+}
