@@ -208,7 +208,7 @@ export default function AdminDocumentsPage() {
                   Aucun document {getStatusBadge(statusFilter).label.toLowerCase()}
                 </h3>
                 <p className="text-muted-foreground">
-                  Essayez de changer le filtre pour voir d'autres documents
+                  Essayez de changer le filtre pour voir d&apos;autres documents
                 </p>
               </div>
             </CardContent>

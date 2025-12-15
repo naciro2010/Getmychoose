@@ -104,7 +104,7 @@ export default function LoginPage() {
               <div className="text-center text-sm text-muted-foreground">
                 Pas encore de compte ?{" "}
                 <Link href="/auth/register" className="text-primary hover:underline">
-                  S'inscrire
+                  S&apos;inscrire
                 </Link>
               </div>
             </form>

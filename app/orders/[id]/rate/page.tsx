@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Package, ArrowLeft, Star } from "lucide-react";
 
-export default function RateOrderPage({ params }: { params: { id: string } }) {
+export default function RateOrderPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
   const { data: session } = useSession();
   const [rating, setRating] = useState(0);
@@ -32,14 +33,14 @@ export default function RateOrderPage({ params }: { params: { id: string } }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: params.id,
+          orderId: id,
           rating,
           comment,
         }),
       });
 
       if (response.ok) {
-        router.push(`/orders/${params.id}`);
+        router.push(`/orders/${id}`);
       } else {
         const data = await response.json();
         alert(data.error || "Erreur lors de l'envoi de l'évaluation");
@@ -59,7 +60,7 @@ export default function RateOrderPage({ params }: { params: { id: string } }) {
             <Package className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">GetMyChoose</span>
           </Link>
-          <Link href={`/orders/${params.id}`}>
+          <Link href={`/orders/${id}`}>
             <Button variant="ghost">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
@@ -92,11 +93,10 @@ export default function RateOrderPage({ params }: { params: { id: string } }) {
                       className="transition-transform hover:scale-110"
                     >
                       <Star
-                        className={`h-12 w-12 ${
-                          star <= (hoveredRating || rating)
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300"
-                        }`}
+                        className={`h-12 w-12 ${star <= (hoveredRating || rating)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                          }`}
                       />
                     </button>
                   ))}
@@ -130,13 +130,13 @@ export default function RateOrderPage({ params }: { params: { id: string } }) {
                   onChange={(e) => setComment(e.target.value)}
                 />
                 <p className="text-sm text-muted-foreground">
-                  Décrivez ce qui s'est bien passé ou ce qui pourrait être amélioré
+                  Décrivez ce qui s&apos;est bien passé ou ce qui pourrait être amélioré
                 </p>
               </div>
 
               {/* Submit */}
               <div className="flex gap-3">
-                <Link href={`/orders/${params.id}`} className="flex-1">
+                <Link href={`/orders/${id}`} className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     Annuler
                   </Button>
@@ -154,7 +154,7 @@ export default function RateOrderPage({ params }: { params: { id: string } }) {
           <h3 className="font-semibold mb-2 text-blue-900">Conseils pour une bonne évaluation</h3>
           <ul className="space-y-1 text-sm text-blue-800">
             <li>• Soyez honnête et constructif</li>
-            <li>• Mentionnez les points positifs et les axes d'amélioration</li>
+            <li>• Mentionnez les points positifs et les axes d&apos;amélioration</li>
             <li>• Évitez les commentaires offensants</li>
             <li>• Votre avis sera visible publiquement</li>
           </ul>

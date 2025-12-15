@@ -53,7 +53,7 @@ export default function Home() {
                 <span className="block text-primary">entre particuliers</span>
               </h1>
               <p className="mt-6 text-lg text-muted-foreground md:text-xl">
-                Envoyez vos colis en quelques clics ou devenez livreur et gagnez de l'argent
+                Envoyez vos colis en quelques clics ou devenez livreur et gagnez de l&apos;argent
                 en complétant vos trajets quotidiens.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
@@ -294,7 +294,7 @@ export default function Home() {
                 Prêt à commencer ?
               </h2>
               <p className="mt-4 text-lg text-primary-foreground/90">
-                Rejoignez des milliers d'utilisateurs satisfaits
+                Rejoignez des milliers d&apos;utilisateurs satisfaits
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/register?type=customer">
@@ -336,7 +336,7 @@ export default function Home() {
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/help">Centre d'aide</Link></li>
+                <li><Link href="/help">Centre d&apos;aide</Link></li>
                 <li><Link href="/contact">Contact</Link></li>
                 <li><Link href="/faq">FAQ</Link></li>
               </ul>

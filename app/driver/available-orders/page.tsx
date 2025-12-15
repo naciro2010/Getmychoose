@@ -159,7 +159,7 @@ export default function AvailableOrdersPage() {
                 <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">Aucune course disponible</h3>
                 <p className="text-muted-foreground mb-6">
-                  Il n'y a pas de courses disponibles pour le moment. Revenez plus tard !
+                  Il n&apos;y a pas de courses disponibles pour le moment. Revenez plus tard !
                 </p>
                 <Link href="/dashboard">
                   <Button>Retour au tableau de bord</Button>
