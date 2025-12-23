@@ -118,9 +118,8 @@ export default function CreateOrderPage() {
           ].map((s) => (
             <div key={s.num} className="flex flex-col items-center flex-1">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                  step >= s.num ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step >= s.num ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  }`}
               >
                 {s.num}
               </div>
@@ -258,7 +257,7 @@ export default function CreateOrderPage() {
                   className="h-4 w-4 rounded border-gray-300"
                 />
                 <Label htmlFor="prohibitedItems" className="text-sm font-normal">
-                  Je certifie que le colis ne contient pas d'objets interdits (armes, produits dangereux, etc.)
+                  Je certifie que le colis ne contient pas d&apos;objets interdits (armes, produits dangereux, etc.)
                 </Label>
               </div>
 

@@ -190,7 +190,7 @@ export default function AdminDashboardPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Dashboard Administrateur</h1>
           <p className="text-muted-foreground">
-            Vue d'ensemble de la plateforme GetMyChoose
+            Vue d&apos;ensemble de la plateforme GetMyChoose
           </p>
         </div>
 
@@ -230,11 +230,10 @@ export default function AdminDashboardPage() {
                     className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-full ${
-                        order.status === "DELIVERED" ? "bg-green-100" :
-                        order.status === "CANCELLED" ? "bg-red-100" :
-                        "bg-blue-100"
-                      }`}>
+                      <div className={`p-2 rounded-full ${order.status === "DELIVERED" ? "bg-green-100" :
+                          order.status === "CANCELLED" ? "bg-red-100" :
+                            "bg-blue-100"
+                        }`}>
                         {order.status === "DELIVERED" ? (
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
                         ) : order.status === "CANCELLED" ? (

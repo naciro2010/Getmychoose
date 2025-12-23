@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -61,7 +61,8 @@ interface Order {
   };
 }
 
-export default function OrderDetailsPage({ params }: { params: { id: string } }) {
+export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const router = useRouter();
   const { data: session, status } = useSession();
   const [order, setOrder] = useState<Order | null>(null);
@@ -78,7 +79,7 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
 
   const fetchOrder = async () => {
     try {
-      const response = await fetch(`/api/orders/${params.id}`);
+      const response = await fetch(`/api/orders/${id}`);
       const data = await response.json();
 
       if (response.ok) {
@@ -97,7 +98,7 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
   const handleAction = async (action: string) => {
     setActionLoading(true);
     try {
-      const response = await fetch(`/api/orders/${params.id}`, {
+      const response = await fetch(`/api/orders/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
@@ -198,9 +199,8 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
           <CardContent>
             <div className="space-y-4">
               <div className={`flex items-center gap-3 ${order.createdAt ? "opacity-100" : "opacity-50"}`}>
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                  order.createdAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
-                }`}>
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${order.createdAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                  }`}>
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -214,9 +214,8 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
               </div>
 
               <div className={`flex items-center gap-3 ${order.acceptedAt ? "opacity-100" : "opacity-50"}`}>
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                  order.acceptedAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
-                }`}>
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${order.acceptedAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                  }`}>
                   <TruckIcon className="h-5 w-5" />
                 </div>
                 <div>
@@ -230,9 +229,8 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
               </div>
 
               <div className={`flex items-center gap-3 ${order.pickedUpAt ? "opacity-100" : "opacity-50"}`}>
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                  order.pickedUpAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
-                }`}>
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${order.pickedUpAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                  }`}>
                   <Package className="h-5 w-5" />
                 </div>
                 <div>
@@ -246,9 +244,8 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
               </div>
 
               <div className={`flex items-center gap-3 ${order.deliveredAt ? "opacity-100" : "opacity-50"}`}>
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                  order.deliveredAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
-                }`}>
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center ${order.deliveredAt ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"
+                  }`}>
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -464,9 +461,8 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-5 w-5 ${
-                      i < order.rating!.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                    }`}
+                    className={`h-5 w-5 ${i < order.rating!.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                      }`}
                   />
                 ))}
                 <span className="font-semibold ml-2">{order.rating.rating}/5</span>

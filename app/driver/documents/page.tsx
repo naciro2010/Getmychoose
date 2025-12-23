@@ -302,7 +302,7 @@ export default function DriverDocumentsPage() {
         {/* Help */}
         <Card className="mt-8">
           <CardHeader>
-            <CardTitle>Besoin d'aide ?</CardTitle>
+            <CardTitle>Besoin d&apos;aide ?</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>• Tous les documents doivent être lisibles et non expirés</p>
